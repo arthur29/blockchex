@@ -3,7 +3,7 @@ defmodule RecordsController do
   alias Blockchain.Record
 
   def create(conn,%{"name" => name, "text" => text}) do
-    case Record.add_record(%Record{name: name, text: text, date: Date.utc_today()}) do
+    case Record.add_record(%Record{name: name, text: text, datetime: DateTime.utc_now()}) do
       :ok -> send_resp(conn, 201, "record created successful\n")
       error -> send_resp(conn, 500, error)
     end

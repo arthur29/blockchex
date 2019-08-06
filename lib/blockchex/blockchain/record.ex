@@ -1,6 +1,6 @@
 defmodule Blockchain.Record do
   use Agent
-  defstruct name: "", date: nil, text: ""
+  defstruct name: "", datetime: nil, text: ""
 
   @spec start_link(List) :: :ok
   def start_link(_opts) do
@@ -35,18 +35,28 @@ defmodule Blockchain.Record do
   @spec refound_three_records([Records]) :: :ok
   def refound_three_records(records) do
     Agent.update(__MODULE__, fn tail -> records ++ tail end)
-    IO.inspect("REFOUNDED")
   end
 
   defp remove_elements(records) do
-    [first, second, third | other_records] = records
+    [first, second, third | other_records] = ordinate_records(records)
+
     Agent.update(__MODULE__, fn _ -> other_records end)
     [first, second, third]
   end
+
+  defp ordinate_records(records) do
+    Enum.sort(records, fn r1, r2 ->
+      case DateTime.compare(r1.datetime, r2.datetime) do
+        :lt -> true
+        _ -> false
+      end
+    end)
+  end
+
 end
 
 defimpl Jason.Encoder, for: Blockchain.Record do
   def encode(value, opts) do
-    Jason.Encode.map(Map.take(value, [:name, :date, :text]), opts)
+    Jason.Encode.map(Map.take(value, [:name, :datetime, :text]), opts)
   end
 end
