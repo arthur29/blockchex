@@ -19,6 +19,17 @@ defmodule BlockchexWeb.Router do
     get "/", PageController, :index
   end
 
+  scope path: "/registers" do
+    post "/", RecordsController, :create
+    get "/pending", RecordsController, :pending
+  end
+
+  scope path: "/blockchain" do
+    get "/", BlocksController, :index
+    get "/mine", BlocksController, :mine
+    #get "/mine" BockchainController, :mine
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", BlockchexWeb do
   #   pipe_through :api
