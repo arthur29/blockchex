@@ -22,21 +22,15 @@ defmodule Blockchain.Blockchain do
   @spec mine_records() ::
           {:error, :no_minimum_to_mine} | {:error, :invalid_block_insertion} | {:ok, Block}
   def mine_records() do
-    case Record.get_three_records() do
-      {:error, :no_minimum_records} -> {:error, :no_minimum_to_mine}
-      {:ok, records} -> processes_mining(records)
-    end
-  end
-
-  defp processes_mining(records) do
-    with block <- create_block(records),
+    with {:ok, records} <- Record.get_three_records(),
+         block <- create_block(records),
          block <- Block.mine(block),
-         {:ok, block} <- insert_on_blockchain(block) do
-      {:ok, block}
+         {:error, reason} <- insert_on_blockchain(block) do
+      Record.refound_three_records(records)
+      {:error, reason}
     else
-      {:error, reason} ->
-        Record.refound_three_records(records)
-        {:error, reason}
+      {:error, :no_minimum_records} -> {:error, :no_minimum_to_mine}
+      {:ok, block} -> {:ok, block}
     end
   end
 

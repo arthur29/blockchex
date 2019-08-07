@@ -1,6 +1,6 @@
 defmodule Blockchain.Block do
   require Logger
-  defstruct previous_block_hash: nil, data: %{nonce: 5450540, records: []}, hash: nil
+  defstruct previous_block_hash: nil, data: %{nonce: 0, records: []}, hash: nil
 
   @spec mine(Block) :: Block
   def mine(block) do
